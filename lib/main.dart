@@ -26,14 +26,12 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GitHubbbbbb'),
+        title: const Text('Search Repository...'),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [BodyWidget()],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [BodyWidget()],
         ),
       ),
     );
@@ -45,25 +43,41 @@ class BodyWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController textEditingController = TextEditingController();
     final dataList = ref.watch(snpProvider);
     final ctrl = ref.read(snpProvider.notifier);
     return dataList.when(
       data: (data) {
-        return Column(
-          children: [
-            TextField(
-              onChanged: (v) {
-                ctrl.fetchData(v);
-              },
-            ),
-            if (data != null)
-              ...data.map((e) => ListTile(
-                    title: Text(e.name.toString()),
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(e.owner['avatar_url']),
-                    ),
-                  ))
-          ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            children: [
+              TextField(
+                controller: textEditingController,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: MaterialButton(
+                  color: Colors.orange,
+                  onPressed: () {
+                    final text = textEditingController.text;
+                    ctrl.fetchData(text);
+                  },
+                  child: const Text('search'),
+                ),
+              ),
+              if (data != null)
+                ...data.map((e) => Card(
+                      child: ListTile(
+                        title: Text(e.name ?? ''),
+                        leading: CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(e.owner!['avatar_url'] ?? ''),
+                        ),
+                      ),
+                    ))
+            ],
+          ),
         );
       },
       error: (e, s) => Text(e.toString()),

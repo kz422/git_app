@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
-final dioServiceProvider = Provider<DioService>((ref) {
-  return DioService();
-});
+final dioServiceProvider = Provider<DioService>((ref) => DioService());
 
 class DioService {
   final dio = Dio();
@@ -19,8 +17,8 @@ class DioService {
       }
     } on DioError catch (e) {
       if (e.response != null) {
-      } else {
-      }
+        print(e);
+      } else {}
       throw Exception();
     }
   }

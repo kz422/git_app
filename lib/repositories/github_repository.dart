@@ -24,8 +24,9 @@ class GitHubRepository {
         final items = data['items'];
         final dataList = items.map((e) => GitHubData.fromJson(e)).toList();
         return dataList;
-      } else if (res.statusCode == 403) {
-        throw Exception();
+      } else {
+        print('403!!!');
+        // throw Exception();
       }
     } on DioError catch (e) {
       print(
@@ -36,8 +37,9 @@ class GitHubRepository {
   }
 }
 
-class FutureCounterNotifier extends StateNotifier<AsyncValue<List<dynamic>?>> {
-  FutureCounterNotifier(this.ref) : super(const AsyncLoading()) {
+class FetchRepositoryNotifier
+    extends StateNotifier<AsyncValue<List<dynamic>?>> {
+  FetchRepositoryNotifier(this.ref) : super(const AsyncLoading()) {
     fetchData('kz422');
   }
   final Ref ref;
@@ -50,5 +52,5 @@ class FutureCounterNotifier extends StateNotifier<AsyncValue<List<dynamic>?>> {
 }
 
 final snpProvider =
-    StateNotifierProvider<FutureCounterNotifier, AsyncValue<List<dynamic>?>>(
-        (ref) => FutureCounterNotifier(ref));
+    StateNotifierProvider<FetchRepositoryNotifier, AsyncValue<List<dynamic>?>>(
+        (ref) => FetchRepositoryNotifier(ref));

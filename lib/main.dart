@@ -26,7 +26,10 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Repository...'),
+        title: SizedBox(
+          width: 30,
+          child: Image.asset('assets/images/github-mark.png'),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -46,44 +49,48 @@ class BodyWidget extends ConsumerWidget {
     TextEditingController textEditingController = TextEditingController();
     final dataList = ref.watch(snpProvider);
     final ctrl = ref.read(snpProvider.notifier);
-    return dataList.when(
-      data: (data) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            children: [
-              TextField(
-                controller: textEditingController,
+    return Column(
+      children: [
+        dataList.when(
+          data: (data) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: textEditingController,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: MaterialButton(
+                      color: Colors.orange,
+                      onPressed: () {
+                        final text = textEditingController.text;
+                        ctrl.fetchData(text);
+                      },
+                      child: const Text('search'),
+                    ),
+                  ),
+                  if (data != null)
+                    ...data.map((e) => Card(
+                          child: ListTile(
+                            title: Text(e.name ?? ''),
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(e.owner!['avatar_url'] ?? ''),
+                            ),
+                          ),
+                        ))
+                ],
               ),
-              SizedBox(
-                width: double.infinity,
-                child: MaterialButton(
-                  color: Colors.orange,
-                  onPressed: () {
-                    final text = textEditingController.text;
-                    ctrl.fetchData(text);
-                  },
-                  child: const Text('search'),
-                ),
-              ),
-              if (data != null)
-                ...data.map((e) => Card(
-                      child: ListTile(
-                        title: Text(e.name ?? ''),
-                        leading: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(e.owner!['avatar_url'] ?? ''),
-                        ),
-                      ),
-                    ))
-            ],
+            );
+          },
+          error: (e, s) => Text(e.toString()),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
           ),
-        );
-      },
-      error: (e, s) => Text(e.toString()),
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+        ),
+      ],
     );
   }
 }
